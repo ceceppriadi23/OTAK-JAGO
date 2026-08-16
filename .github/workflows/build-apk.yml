@@ -18,7 +18,7 @@ jobs:
           unzip -q "OTAK_JAGO_MYSTERY_QUEST_V1_GITHUB_READY.zip" -d project
 
           echo "=== PROJECT STRUCTURE ==="
-          find project -maxdepth 3 -type f | sort
+          find project -maxdepth 4 -type f | sort
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -29,19 +29,32 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Build Debug APK
-        working-directory: project
+      - name: Find Gradle root
         run: |
+          ROOT_DIR=$(find project -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" \) -print -quit | xargs -r dirname)
+
+          if [ -z "$ROOT_DIR" ]; then
+            echo "ERROR: Gradle root tidak ditemukan."
+            find project -type f | sort
+            exit 1
+          fi
+
+          echo "Gradle root ditemukan: $ROOT_DIR"
+          echo "ROOT_DIR=$ROOT_DIR" >> "$GITHUB_ENV"
+
+      - name: Build Debug APK
+        run: |
+          cd "$ROOT_DIR"
           gradle :app:assembleDebug --stacktrace
 
       - name: Find APK
         run: |
           echo "=== APK YANG DIHASILKAN ==="
-          find project -type f -name "*.apk" -print
+          find "$ROOT_DIR" -type f -name "*.apk" -print
 
       - name: Upload Mystery Quest APK
         uses: actions/upload-artifact@v4
         with:
           name: OTAK-JAGO-MYSTERY-QUEST-APK
-          path: project/**/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/debug/*.apk"
           if-no-files-found: error
