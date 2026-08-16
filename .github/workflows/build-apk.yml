@@ -1,4 +1,4 @@
-name: Build OTak Jago Mystery Quest APK
+name: Build Otak Jago Mystery Quest APK
 
 on:
   workflow_dispatch:
@@ -17,26 +17,8 @@ jobs:
           mkdir -p project
           unzip -q "OTAK_JAGO_MYSTERY_QUEST_V1_GITHUB_READY.zip" -d project
 
-          echo "=== Isi project ==="
-          find project -maxdepth 3 -type f | head -100
-
-      - name: Find Gradle project
-        run: |
-          GRADLEW=$(find project -type f -name gradlew | head -1)
-
-          if [ -z "$GRADLEW" ]; then
-            echo "ERROR: gradlew tidak ditemukan di dalam ZIP."
-            echo "=== Isi ZIP ==="
-            find project -maxdepth 5 -type f
-            exit 1
-          fi
-
-          GRADLE_DIR=$(dirname "$GRADLEW")
-
-          echo "Gradle wrapper ditemukan:"
-          echo "$GRADLEW"
-
-          echo "GRADLE_DIR=$GRADLE_DIR" >> "$GITHUB_ENV"
+          echo "=== PROJECT STRUCTURE ==="
+          find project -maxdepth 3 -type f | sort
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -48,14 +30,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Build Debug APK
-        working-directory: ${{ env.GRADLE_DIR }}
+        working-directory: project
         run: |
-          chmod +x gradlew
-          ./gradlew :app:assembleDebug --stacktrace
+          gradle :app:assembleDebug --stacktrace
 
       - name: Find APK
         run: |
-          echo "=== APK yang dihasilkan ==="
+          echo "=== APK YANG DIHASILKAN ==="
           find project -type f -name "*.apk" -print
 
       - name: Upload Mystery Quest APK
