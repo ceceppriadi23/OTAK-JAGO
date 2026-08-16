@@ -28,8 +28,7 @@ jobs:
       - name: Build Release APK
         working-directory: project
         run: |
-          chmod +x gradlew
-          ./gradlew :app:assembleRelease
+          gradle :app:assembleRelease
 
       - name: Generate signing key
         run: |
