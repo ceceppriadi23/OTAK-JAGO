@@ -15,7 +15,7 @@ jobs:
         run: |
           rm -rf project
           mkdir -p project
-          unzip -q "OTAK_JAGO_MYSTERY_QUEST_V1_GITHUB_READY.zip" -d project
+          unzip -q "OTAK_JAGO_MYSTERY_QUEST_V2_BUILD8.zip" -d project
 
           echo "=== PROJECT STRUCTURE ==="
           find project -maxdepth 4 -type f | sort
